@@ -52,5 +52,16 @@ This will return the index of the best move on the board.
 - TensorFlow
 - NumPy
 
-You can install the required libraries using the following command:
+You can install the required libraries using the following command
+
+
+
+
+------
+[GitHub Game Repository](https://github.com/taxi-tabby/tictactoe-ai-game)
+
+
+
+
+
 
