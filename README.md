@@ -5,13 +5,18 @@ This repository contains a project for training a Tic-Tac-Toe AI model using mac
 
 ## Setup Instructions
 
-### 1. Unzip the Data
-After unzipping `data.zip`, you will get the following JSON files:
+### 1. ~~Unzip the Data~~
+~~After unzipping `data.zip`, you will get the following JSON files:~~
 
-- `data1.json`
-- `data2.json`
-- `data3.json`
-- `data4.json`
+- ~~`data1.json`~~
+- ~~`data2.json`~~
+- ~~`data3.json`~~
+- ~~`data4.json`~~
+
+### 1. Get Training Data
+You can download the training data from the following link:
+[TicTacToe Training Data generator](https://smallbrain-labo.work/game/train/tictactoe)
+
 
 ### 2. Data Normalization
 In the same directory, execute `json.py` to normalize the data.  
