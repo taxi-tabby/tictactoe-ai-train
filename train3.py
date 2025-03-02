@@ -5,10 +5,11 @@ from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.layers import LeakyReLU
 
 # Numpy 파일 로드
-train_x = np.load('train_x3.npy')  # 보드 상태 (3x3 행렬)
-train_y = np.load('train_y3.npy')  # 최적의 수 (One-Hot 가능성 있음)
+train_x = np.load('train_x4.npy')  # 보드 상태 (3x3 행렬)
+train_y = np.load('train_y4.npy')  # 최적의 수 (One-Hot 가능성 있음)
 
 # 🔥 해결 방법: 입력 데이터를 1D 벡터로 변환
 train_x = train_x.reshape(-1, 9)  
@@ -35,19 +36,11 @@ print('---------------------')
 # 모델 정의
 def create_model():
     model = Sequential([
-        Dense(512, input_dim=9, activation='relu'),
-        BatchNormalization(),
-        Dropout(0.5),
-
-        Dense(256, activation='relu'),
-        BatchNormalization(),
-        Dropout(0.4),
-
-        Dense(128, activation='relu'),
-        BatchNormalization(),
-        Dropout(0.3),
-
+        Dense(128, input_dim=9, activation='relu'),
+        Dropout(0.2),
         Dense(64, activation='relu'),
+        Dropout(0.1),
+        Dense(32, activation='relu'),
         Dense(9, activation='softmax')
     ])
 
