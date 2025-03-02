@@ -1,8 +1,10 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.optimizers import SGD
 
 # Numpy 파일 로드
 train_x = np.load('train_x3.npy')  # 보드 상태 (3x3 행렬)
@@ -19,7 +21,7 @@ if train_y.ndim > 1:
 train_y = train_y.astype(np.int32)  
 
 
-
+print(tf.__version__)
 print('---------------------')
 print(np.unique(train_x)) 
 print('---------------------')
@@ -33,21 +35,28 @@ print('---------------------')
 # 모델 정의
 def create_model():
     model = Sequential([
-        Dense(256, input_dim=9, activation='relu'),
+        Dense(512, input_dim=9, activation='relu'),
         BatchNormalization(),
         Dropout(0.5),
+
+        Dense(256, activation='relu'),
+        BatchNormalization(),
+        Dropout(0.4),
 
         Dense(128, activation='relu'),
         BatchNormalization(),
         Dropout(0.3),
 
         Dense(64, activation='relu'),
-        Dense(9, activation='softmax')  # 최적의 수 (0~8 예측)
+        Dense(9, activation='softmax')
     ])
 
-    model.compile(optimizer=Adam(learning_rate=0.001), 
-                  loss='sparse_categorical_crossentropy',  
-                  metrics=['accuracy'])
+
+    # 모멘텀 추가하여 빠른 수렴 유도
+    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9), 
+                loss='sparse_categorical_crossentropy', 
+                metrics=['accuracy'])
+
     return model
 
 # 모델 생성
