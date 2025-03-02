@@ -20,9 +20,18 @@ if not data:
 def board_to_numeric(board_state):
     return np.array([[1 if cell == 'X' else (-1 if cell == 'O' else 0) for cell in row] for row in board_state])
 
+
 # 🟢 최적의 수만 추출하는 함수
 def find_best_moves(history, result):
-    return history if result == "Draw" else [move for move in history if move["player"] == result]
+    if result == "Draw":
+        return []  # 무승부인 경우 빈 리스트 반환
+    else:
+        for move in reversed(history):  # 뒤에서부터 확인
+            if move["player"] == result:  # 승리한 플레이어의 마지막 수 찾기
+                return [move]  # 마지막 수만 반환 ✅
+        return []
+
+
 
 # 🟢 데이터 변환 함수
 def generate_data(data):
