@@ -41,6 +41,24 @@ for file in files:
         elif file_type == 'y':
             train_files['y'][shape] = file
 
+dataLengthCollector = []
+
+# ✅ 배치 크기를 미리 구하기 위해 먼저 접근해서 사이즈를 저장
+for shape in tqdm(train_files['x'].keys(), desc="Collecting Data Lengths all training data"):
+    x_file = train_files['x'].get(shape)
+    y_file = train_files['y'].get(shape)
+    
+    train_x = np.load(os.path.join(directory, x_file))
+    data_size = train_x.shape[0]
+    
+    dataLengthCollector.append(data_size)
+
+
+
+print(f"🔹 ----------------------------------------------------------------------------------")
+print(f"🔹 training size: {dataLengthCollector}:")
+
+
 # ✅ 모델 학습을 위한 루프
 for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
 
@@ -51,14 +69,13 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
     if x_file and y_file:
         
         # ✅ Numpy 파일 로드
-        train_x = np.load(os.path.join(directory, x_file))  # 보드 상태 (3x3 행렬)
-        train_y = np.load(os.path.join(directory, y_file))  # 최적의 수 (정수 레이블)
-
+        train_x = np.load(os.path.join(directory, x_file))
+        train_y = np.load(os.path.join(directory, y_file))
 
         # ✅ 동적으로 보드 크기 추출
-        x_size, y_size = train_x.shape[1], train_x.shape[2]  # x_size, y_size를 동적으로 추출
+        data_size, x_size, y_size = train_x.shape[0], train_x.shape[1], train_x.shape[2]  # x_size, y_size를 동적으로 추출
 
-
+        batch_size = dynamicBatchSize(dataLengthCollector, data_size)
 
         train_x_shape = np.expand_dims(train_x, axis=-1)         
         train_y_int = np.argmax(train_y, axis=1)
@@ -77,6 +94,7 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         print(f"🔹 Model Training for size {shape}:")
         print(f"   train_x shape: {train_x.shape}")  
         print(f"   train_y shape: {train_y.shape}")  
+        print(f"   batch_size: {data_size} -> {batch_size}")
 
         # ✅ 모델 생성
         input_shape = train_x_shape.shape[1:]  # (height, width, channels)
@@ -86,7 +104,7 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         model = create_model1(input_shape) 
         
         # 모델 훈련
-        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=dynamicBatchSize, validation_split=0.01, callbacks=[reduce_lr, early_stopping])
+        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=batch_size, validation_split=0.01, callbacks=[reduce_lr, early_stopping])
         
         # 모델 평가
         loss, accuracy = model.evaluate(train_x_shape, train_y_int)
