@@ -163,9 +163,9 @@ def create_model1(input_shape):
         GlobalAveragePooling2D(),
 
         # Fully connected layers
-        Dense(512, activation='relu', kernel_regularizer=l2(0.01)),  # L2 정규화 추가
+        Dense(512, activation='relu',),  # L2 정규화 추가
         Dropout(0.5),
-        Dense(256, activation='relu', kernel_regularizer=l2(0.01)),  # L2 정규화 추가
+        Dense(256, activation='relu'),  # L2 정규화 추가
         Dropout(0.5),
 
         # 출력층
