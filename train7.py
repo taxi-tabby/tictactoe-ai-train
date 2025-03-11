@@ -7,7 +7,7 @@ from tensorflow.keras.layers import Conv2D, Flatten, Dense, Dropout, MaxPooling2
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tqdm import tqdm  
-from utils import create_model1  
+from utils import create_model1, dynamicBatchSize
 
 # EarlyStopping 설정
 early_stopping = EarlyStopping(monitor='val_loss', patience=30, restore_best_weights=True, verbose=1)
@@ -86,7 +86,7 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         model = create_model1(input_shape) 
         
         # 모델 훈련
-        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=32, validation_split=0.01, callbacks=[reduce_lr, early_stopping])
+        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=dynamicBatchSize, validation_split=0.01, callbacks=[reduce_lr, early_stopping])
         
         # 모델 평가
         loss, accuracy = model.evaluate(train_x_shape, train_y_int)

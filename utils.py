@@ -92,7 +92,12 @@ def create_model2(input_shape):
     return model
 
 
-
+def dynamicBatchSize(total_samples, max_batch_size=256, min_batch_size=32):
+    # 데이터 양에 비례하여 배치 크기를 조정 (샘플 수가 많으면 배치 크기 작게)
+    batch_size = int(total_samples ** 0.5)  # 데이터 수의 제곱근을 배치 크기로 설정
+    # 설정된 배치 크기가 너무 작거나 너무 크지 않도록 제한
+    batch_size = max(min_batch_size, min(batch_size, max_batch_size))
+    return batch_size
 
 def create_model1(input_shape):
     model = Sequential([
