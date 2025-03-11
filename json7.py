@@ -62,36 +62,58 @@ def generate_data(data):
             continue
 
         # 승자 반환. 수집하기 위함.
-        winner: int = value_to_numeric(item['result'])
+        # winner: int = value_to_numeric(item['result'])
 
 
         # 이전에 있던 패자의 수를 먼저 저장
         count = 0
         dataTuple = {"x": None, "y": None};
         for move in item['history']:
+            
             picked = None
-            if move['player'] == 'X' and winner == 1:  # 'X' 승리
-                picked = move
-            elif move['player'] == 'O' and winner == -1:  # 'O' 승리
-                picked = move
+            countWillUp = False
+            
+            
+            # if move['player'] == 'X' :  # 'X' 승리
+            #     picked = move
+            # elif move['player'] == 'O':  # 'O' 승리
+            #     picked = move
+            
+            # 모든 수를 지정
+            picked = move
+                
                 
             #학습용 데이터 입력(패자의 현재 보드 상태)
             if picked is not None:
-                if count % 2 == 0:
-                    dataTuple['x'] = board_to_numeric(picked['boardState'], rows, cols)
-                    valid_data_count += 1
-                    ++count
+                board = picked['boardState']
                 
-                if count % 2 == 1:
-                    dataTuple['y'] = board_to_numeric(picked['boardState'], rows, cols).flatten()
+
+                    
+                
+                if count % 2 == 0 and countWillUp is False:
+                    # print("짝")
+                    dataTuple['x'] = board_to_numeric(board, rows, cols)
+                    countWillUp = True
+                    
+                if count % 2 == 1 and countWillUp is False:
+                    # print("홀")
+                    dataTuple['y'] = board_to_numeric(board, rows, cols).flatten()
+                    countWillUp = True
+                    
+                    
+                if countWillUp:
+                    count += 1
                     valid_data_count += 1
-                    ++count
+                
+
+                
+                
+                # print(f"count : {count}")
                 
                 if dataTuple['x'] is not None and dataTuple['y'] is not None:
-                    print(f"Data Tuple : {len(dataTuple['x'])} / {len(dataTuple['y'])}")
-                    X.append(dataTuple[0])
-                    y.append(dataTuple[1])
-                    dataTuple = (None, None)
+                    X.append(dataTuple['x'])
+                    y.append(dataTuple['y'])
+                    dataTuple = {"x": None, "y": None}
                     
             
 
@@ -117,12 +139,15 @@ def generate_data(data):
     print(f"Board Size : {board_sizes}")
     data_by_size = {size: {"X": [], "y": []} for size in board_sizes}
 
+    print(f"x : {len(X)} / y : {len(y)}")
+
     for x, y in zip(X, y):
         board_size = (x.shape[0], x.shape[1])
+        # print(f"x : {x.shape[0]} / y : {y.shape[0]}")
         data_by_size[board_size]["X"].append(x)
         data_by_size[board_size]["y"].append(y)
 
-    print(f"Data by Size : {data_by_size}")
+    # print(f"Data by Size : {data_by_size}")
 
     # 각 보드 크기별로 데이터를 파일로 저장
     output_dir = './npy/'
