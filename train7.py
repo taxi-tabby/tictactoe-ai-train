@@ -104,7 +104,7 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         model = create_model1(input_shape) 
         
         # 모델 훈련
-        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=batch_size, validation_split=0.01, callbacks=[reduce_lr, early_stopping])
+        model.fit(train_x_shape, train_y_int, epochs=2000, batch_size=batch_size, validation_split=0.005, callbacks=[reduce_lr, early_stopping])
         
         # 모델 평가
         loss, accuracy = model.evaluate(train_x_shape, train_y_int)
