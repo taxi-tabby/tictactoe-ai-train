@@ -16,6 +16,10 @@ I used tensorflow to make web implantation easier
 
 Currently, I am facing difficulties with attempting model ensembling due to a lack of technical expertise. Additionally, the time required for data preprocessing and training is significantly larger than anticipated.
 
+### Update on TensorFlow Version
+
+To convert TensorFlow for web implementation, it has been confirmed that TensorFlow version 2.15 must be used in a Linux environment for proper functionality.
+
 
 
 
