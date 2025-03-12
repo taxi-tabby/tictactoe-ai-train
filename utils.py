@@ -35,12 +35,16 @@ def longest_sequence(board):
     for col in board.T:
         max_length = max(max_length, check_sequence(col))
 
-    # Check diagonals
+    # Check diagonals (left to right)
     for offset in range(-board.shape[0] + 1, board.shape[1]):
         max_length = max(max_length, check_sequence(board.diagonal(offset)))
-        max_length = max(max_length, check_sequence(np.fliplot(board).diagonal(offset)))
+
+    # Check diagonals (right to left) - using np.fliplr to flip the board horizontally
+    for offset in range(-board.shape[0] + 1, board.shape[1]):
+        max_length = max(max_length, check_sequence(np.fliplr(board).diagonal(offset)))
 
     return max_length
+
 
 def value_to_numeric(value):
     """

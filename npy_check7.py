@@ -13,7 +13,7 @@ def generate_grid_report(directory):
     file_names = [f for f in os.listdir(directory) if f.endswith('.npy')]
     
     # Pattern to match x and y files, e.g., train_x_4x9.npy and train_y_4x9.npy
-    pattern = re.compile(r"train_(x|y)_(\d+)x(\d+)\.npy")
+    pattern = re.compile(r"train_(x|y)_(\d+)x(\d+)_(\d+)\.npy")
     
     # Create a dictionary to store file pairs by their shape
     file_pairs = {}

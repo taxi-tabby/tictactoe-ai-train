@@ -22,7 +22,7 @@ directory = './npy'
 files = [f for f in os.listdir(directory) if f.endswith('.npy')]
 
 # 패턴을 이용해 'train_x'와 'train_y' 파일을 매칭
-pattern = re.compile(r"train_(x|y)_(\d+)x(\d+)\.npy")
+pattern = re.compile(r"train_(x|y)_(\d+)x(\d+)_(\d+)\.npy")
 
 train_files = {'x': {}, 'y': {}}
 
@@ -33,7 +33,8 @@ for file in files:
         file_type = match.group(1)  # 'x' 또는 'y'
         x_size = int(match.group(2))  # x 크기
         y_size = int(match.group(3))  # y 크기
-        shape = (x_size, y_size)
+        win_length = int(match.group(4))  # y 크기
+        shape = (x_size, y_size, win_length)
         
         # x와 y 파일을 구분하여 저장
         if file_type == 'x':
@@ -64,7 +65,8 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
 
     x_file = train_files['x'].get(shape)
     y_file = train_files['y'].get(shape)
-
+    win_length = shape[2]
+    
     # x와 y 파일이 모두 존재하는 경우에만 진행
     if x_file and y_file:
         
@@ -115,7 +117,7 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
 
-        model_filename = f"tictactoe_model_{shape[0]}x{shape[1]}.h5"
+        model_filename = f"tictactoe_model_{shape[0]}x{shape[1]}_{win_length}.h5"
         model.save(os.path.join(model_dir, model_filename))
         print(f"🎯 Model saved as '{model_filename}'")
     
