@@ -11,6 +11,14 @@ I hope that the dataset is always shared with each other through git
 I used tensorflow to make web implantation easier
 
 
+## Notices and Challenges
+(2025-03-13) 
+
+Currently, I am facing difficulties with attempting model ensembling due to a lack of technical expertise. Additionally, the time required for data preprocessing and training is significantly larger than anticipated.
+
+
+
+
 ## Setup Instructions
 
 ### 1. Get Training Data
