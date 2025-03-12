@@ -54,7 +54,6 @@ def generate_data(data):
 
         # 공간 없으면 저리 가쇼
         if num_channels == 0:
-            print(f"No board channels found : {num_channels}")
             continue
         
         # x : 1, o : -1, 빈칸 : 0
