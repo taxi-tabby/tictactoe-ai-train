@@ -12,29 +12,30 @@ def generate_grid_report(directory):
     # List all .npy files
     file_names = [f for f in os.listdir(directory) if f.endswith('.npy')]
     
-    # Pattern to match x and y files, e.g., train_x_4x9.npy and train_y_4x9.npy
-    pattern = re.compile(r"train_(x|y)_(\d+)x(\d+)_(\d+)\.npy")
+    # Pattern to match x and y files, e.g., train_x_7x9_9.npy and train_y_7x9_9.npy
+    pattern = re.compile(r"train_(x|y)_(\d+x\d+)_(\d+)\.npy")
     
-    # Create a dictionary to store file pairs by their shape
+    # Create a dictionary to store file pairs by their (shape, number)
     file_pairs = {}
 
     for file in file_names:
         match = pattern.match(file)
         if match:
-            file_type = match.group(1)  # x or y
-            x_dim = int(match.group(2))
-            y_dim = int(match.group(3))
-            shape = (x_dim, y_dim)
-
-            # Add file to the dictionary by its shape
-            if shape not in file_pairs:
-                file_pairs[shape] = {"x": None, "y": None}
-
-            # Store the file paths in the dictionary
+            file_type = match.group(1)  # 'x' or 'y'
+            shape = match.group(2)      # e.g., '7x9'
+            num = match.group(3)        # e.g., '9'
+            
+            # Use (shape, num) as the key for file pairs
+            key = (shape, num)
+            
+            if key not in file_pairs:
+                file_pairs[key] = {"x": None, "y": None}
+            
+            # Store file paths in the dictionary
             if file_type == "x":
-                file_pairs[shape]["x"] = file
+                file_pairs[key]["x"] = file
             elif file_type == "y":
-                file_pairs[shape]["y"] = file
+                file_pairs[key]["y"] = file
 
     # Determine grid size based on the number of file pairs
     num_files = len(file_pairs)
@@ -46,7 +47,8 @@ def generate_grid_report(directory):
     axes = axes.flatten()  # Flatten the axes array to easily iterate through
 
     # Loop over each file pair (x, y) and fill the grid cells
-    for idx, (shape, files) in enumerate(file_pairs.items()):
+    for idx, (key, files) in enumerate(file_pairs.items()):
+        shape, num = key
         x_file = files["x"]
         y_file = files["y"]
 
@@ -92,7 +94,6 @@ def generate_grid_report(directory):
     # Adjust layout for better spacing
     plt.tight_layout()
     
-
     timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
     # Create the npy_report directory if it doesn't exist
     if not os.path.exists('./npy_report'):
