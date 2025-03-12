@@ -63,5 +63,8 @@ You can install the required libraries using the following command
 
 
 
+------------------
+Latest data info (2025-03-13)
+![Training Data Normalization Report](./npy_report/npy_report_20250313_005721.png)
 
 
