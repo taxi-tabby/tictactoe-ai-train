@@ -4,7 +4,7 @@ import glob
 import random
 import os
 from tqdm import tqdm  # ✅ 진행 상태 표시
-from utils import board_to_numeric, value_to_numeric # 유틸리티 함수 가져오기
+from utils import board_to_numeric, value_to_numeric, longest_sequence # 유틸리티 함수 가져오기
 
 # JSON 파일 경로 패턴
 json_file_pattern = './data/data-*.json'
@@ -27,11 +27,13 @@ if not data:
 
 # 🟢 데이터셋 생성 함수
 def generate_data(data):
-    X, y = [], []  # 학습 데이터 저장 리스트
+    # 학습 데이터 리스트
+    X, y = [], []  
+    # 보드 크기와 승리 조건별로 분리할 딕셔너리
+    data_by_size_and_condition = {}
 
-    board_sizes = set()  # 보드 크기별로 데이터 구분할 때 사용
-    valid_data_count = 0  # 실제로 추가된 유효한 데이터의 개수
-    board_size_counts = {}  # 보드 크기별로 데이터 개수 기록
+    valid_data_count = 0  # 유효한 데이터의 개수
+    board_size_counts = {}  # 보드 크기별 데이터 개수 기록
 
     for item in tqdm(data, desc="🔄 Data transform", unit="Game"):
         
@@ -39,18 +41,11 @@ def generate_data(data):
         cols = 0
         num_channels = 0
         
-        # print(f"item : {item["history"]}")
-        
         if item['history']:
             board = item['history'][0]['boardState']
             rows = len(board)
             cols = len(board[0]) if rows > 0 else 0
             num_channels = rows * cols 
-
-            # board_state = move['boardState']
-            # rows = len(board_state)
-            # cols = len(board_state[0]) if rows > 0 else 0
-
 
         # 공간 없으면 저리 가쇼
         if num_channels == 0:
@@ -60,117 +55,71 @@ def generate_data(data):
         if item['result'] not in ['X', 'O']:
             continue
 
-        # 승자 반환. 수집하기 위함.
-        # winner: int = value_to_numeric(item['result'])
-
-
-        # 이전에 있던 패자의 수를 먼저 저장
+        # 마지막 게임의 보드 상태 가져오기
+        last_board_state = item['history'][-1]['boardState']
+        last_numberic_board = board_to_numeric(last_board_state, rows, cols)
+        winning_condition = longest_sequence(last_numberic_board)
+        
+        # 데이터 저장을 위한 임시 변수
         count = 0
-        dataTuple = {"x": None, "y": None};
+        dataTuple = {"x": None, "y": None}
+        
         for move in item['history']:
-            
             picked = None
             countWillUp = False
             
+            picked = move  # 모든 수를 지정
             
-            # if move['player'] == 'X' :  # 'X' 승리
-            #     picked = move
-            # elif move['player'] == 'O':  # 'O' 승리
-            #     picked = move
-            
-            # 모든 수를 지정
-            picked = move
-                
-                
-            #학습용 데이터 입력(패자의 현재 보드 상태)
             if picked is not None:
                 board = picked['boardState']
                 
-
-                    
-                
                 if count % 2 == 0 and countWillUp is False:
-                    # print("짝")
                     dataTuple['x'] = board_to_numeric(board, rows, cols)
                     countWillUp = True
-                    
+                
                 if count % 2 == 1 and countWillUp is False:
-                    # print("홀")
                     dataTuple['y'] = board_to_numeric(board, rows, cols).flatten()
                     countWillUp = True
-                    
-                    
+                
                 if countWillUp:
                     count += 1
                     valid_data_count += 1
-                
-
-                
-                
-                # print(f"count : {count}")
                 
                 if dataTuple['x'] is not None and dataTuple['y'] is not None:
                     X.append(dataTuple['x'])
                     y.append(dataTuple['y'])
                     dataTuple = {"x": None, "y": None}
-                    
-            
 
-    
-        # 각 보드 크기별로 분리
+        # 보드 크기별로 분리
         board_size = (rows, cols)
-        board_sizes.add(board_size)
+        board_size_counts[board_size] = board_size_counts.get(board_size, 0) + 1
 
+        # winning_condition과 board_size별로 데이터를 분류
+        key = (board_size, winning_condition)
+        if key not in data_by_size_and_condition:
+            data_by_size_and_condition[key] = {"X": [], "y": []}
 
+        data_by_size_and_condition[key]["X"].extend(X)
+        data_by_size_and_condition[key]["y"].extend(y)
 
-        # 보드 크기별 카운트 업데이트
-        if board_size not in board_size_counts:
-            board_size_counts[board_size] = 0
-        board_size_counts[board_size] += 1
-    
-
-            
-            
-
-
-
-    # 보드 크기별로 데이터를 저장
-    print(f"Board Size : {board_sizes}")
-    data_by_size = {size: {"X": [], "y": []} for size in board_sizes}
-
-    print(f"x : {len(X)} / y : {len(y)}")
-
-    for x, y in zip(X, y):
-        board_size = (x.shape[0], x.shape[1])
-        # print(f"x : {x.shape[0]} / y : {y.shape[0]}")
-        data_by_size[board_size]["X"].append(x)
-        data_by_size[board_size]["y"].append(y)
-
-    # print(f"Data by Size : {data_by_size}")
-
-    # 각 보드 크기별로 데이터를 파일로 저장
+    # 보드 크기와 승리 조건별로 데이터를 저장
     output_dir = './npy/'
     os.makedirs(output_dir, exist_ok=True)
 
-
-
-    for size, datasets in data_by_size.items():
+    for (board_size, winning_condition), datasets in data_by_size_and_condition.items():
         X_data = np.array(datasets["X"], dtype=np.float32)
         y_data = np.array(datasets["y"], dtype=np.float32)
-        np.save(f'{output_dir}train_x_{size[0]}x{size[1]}.npy', X_data)
-        np.save(f'{output_dir}train_y_{size[0]}x{size[1]}.npy', y_data)
-        # print(f"🎯 {size[0]}x{size[1]} 보드 크기 학습 데이터 저장 완료: train_x_{size[0]}x{size[1]}.npy, train_y_{size[0]}x{size[1]}.npy")
+
+        # 보드 크기와 승리 조건을 모두 고려한 파일 이름 저장
+        np.save(f'{output_dir}train_x_{board_size[0]}x{board_size[1]}_{winning_condition}.npy', X_data)
+        np.save(f'{output_dir}train_y_{board_size[0]}x{board_size[1]}_{winning_condition}.npy', y_data)
+        print(f"🎯 {board_size[0]}x{board_size[1]} 보드 크기, 승리 조건 {winning_condition}에 맞춰 학습 데이터 저장 완료: train_x_{board_size[0]}x{board_size[1]}_{winning_condition}.npy, train_y_{board_size[0]}x{board_size[1]}_{winning_condition}.npy")
 
     print(f"✅ 변환된 데이터 개수: {valid_data_count}")  # 최종적으로 추가된 유효한 데이터 개수 출력
     
-    # 보드 크기별 데이터 카운트 출력
-    # print("\n📊 각 보드 크기별 데이터 개수:")
-    # for size, count in board_size_counts.items():
-    #     print(f"{size[0]}x{size[1]} 보드 크기: {count}개 데이터")
-
-    return data_by_size
+    return data_by_size_and_condition
 
 
 # 🟢 데이터 생성 및 저장
 if __name__ == '__main__':
-    data_by_size = generate_data(data)  # 데이터 생성 함수 호출 및 반환값을 data_by_size에 할당
+    data_by_size_and_condition = generate_data(data)  # 데이터 생성 함수 호출 및 반환값을 data_by_size_and_condition에 할당

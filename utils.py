@@ -9,6 +9,39 @@ from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.callbacks import EarlyStopping
 from keras.regularizers import l2
 
+
+def longest_sequence(board):
+    def check_sequence(arr):
+        max_len = 0
+        current_len = 0
+        current_val = None
+        for val in arr:
+            if val == current_val and val != 0:
+                current_len += 1
+            else:
+                current_val = val
+                current_len = 1
+            if current_len > max_len:
+                max_len = current_len
+        return max_len
+
+    max_length = 0
+
+    # Check rows
+    for row in board:
+        max_length = max(max_length, check_sequence(row))
+
+    # Check columns
+    for col in board.T:
+        max_length = max(max_length, check_sequence(col))
+
+    # Check diagonals
+    for offset in range(-board.shape[0] + 1, board.shape[1]):
+        max_length = max(max_length, check_sequence(board.diagonal(offset)))
+        max_length = max(max_length, check_sequence(np.fliplot(board).diagonal(offset)))
+
+    return max_length
+
 def value_to_numeric(value):
     """
     보드의 값 ('X', 'O', 빈칸)을 숫자로 변환하는 함수
