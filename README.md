@@ -28,7 +28,7 @@ Once the model (`./model/~~~.h5`) is trained, you can use it for predictions.
 
 ### Input Format
 The model expects an input array in the following format (a 1D array of length 9 representing the current state of the board):
-- `[[1, 2, 0, 0, 1, 2, 0, 0, 1]]`
+- `arr (3, 3)`
 
 ```python
 - `X = 1`
@@ -42,7 +42,7 @@ Each model returns the most advantageous move for each board state, according to
 
 Example:
 
-- `best_move = model.predict([[1, -1, 0, ...], [1, -1, 0, ...], [1, -1, 0, ...] ...])`
+- `board_rates = model.predict([[1, -1, 0, ...], [1, -1, 0, ...], [1, -1, 0, ...] ...])`
 
 This will return the index of the best move on the board.
 
@@ -52,7 +52,7 @@ This will return the index of the best move on the board.
 - TensorFlow
 - NumPy
 
-You can install the required libraries using the following command
+You must install the required libraries ezpz
 
 
 
