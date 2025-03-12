@@ -3,6 +3,14 @@
 ## Overview
 This repository contains a project for training a Tic-Tac-Toe AI model using machine learning. The process involves data preprocessing, training the model, and using it for predictions. Below are the steps to run the project.
 
+The goal of this model is to develop a predictive system that can handle a range of board sizes, from 3x3 to 9x9, with winning conditions varying from 3 to 9.
+
+I look forward to seeing a simple game like Tic Tac Toe evolve into something more challenging and fun. I've seen some games increase difficulty by enlarging the board or changing the winning conditions. However, they often end up following predictable patterns that make the gameplay mechanical. This model aims to create more progressive difficulty and keep the game engaging.
+
+I hope that the dataset is always shared with each other through git
+I used tensorflow to make web implantation easier
+
+
 ## Setup Instructions
 
 ### 1. Get Training Data
@@ -17,6 +25,10 @@ This will generate the following files in the directory:
 
 - `./npy/train_x_{col}x{row}_{winning condition length}.npy`
 - `./npy/train_y_{col}x{row}_{winning condition length}.npy`
+
+### 2.1 Data Verification
+You can verify the normalized data using `npy_check7.py`. This script generates a report in the form of an image, which will be saved in the `/npy_report` folder.
+
 
 ### 3. Model Training
 If `train_x___.npy` and `train_y___.npy` are present, you can run `train7.py` to train the model.  
@@ -55,7 +67,11 @@ This will return the index of the best move on the board.
 You must install the required libraries ezpz
 
 
+## Expectations and objectives and future expectations of how the model works
+The model learns all forms of board configuration to predict the probability of the most likely movement on the board at the time to move to victory.
 
+For now, I'm making predictions about the board composition at a moment
+In the future, I hope the performance will improve enough to learn all the game flows and make predictions about the future.
 
 ------
 [GitHub Game Repository](https://github.com/taxi-tabby/tictactoe-ai-game)
