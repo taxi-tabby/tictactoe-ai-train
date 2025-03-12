@@ -42,7 +42,7 @@ Each model returns the most advantageous move for each board state, according to
 
 Example:
 
-- `best_move = model.predict([[1, -1, 0, 0, 1, -1, 0, 0, 1]])`
+- `best_move = model.predict([[1, -1, 0, ...], [1, -1, 0, ...], [1, -1, 0, ...] ...])`
 
 This will return the index of the best move on the board.
 
