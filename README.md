@@ -10,6 +10,10 @@ I look forward to seeing a simple game like Tic Tac Toe evolve into something mo
 I hope that the dataset is always shared with each other through git
 I used tensorflow to make web implantation easier
 
+### Training Methodology
+
+The training process involves converting the board configuration data into a 2D array of integers. The board state is represented as `X`, and the next move, including the board state, is represented as `Y`. This data is then fed into a Convolutional Neural Network (CNN) to learn the patterns and make predictions. The goal is to enable the model to predict the next move as if it were finding differences in a spot-the-difference puzzle.
+
 
 ## Notices and Challenges
 (2025-03-13) 
