@@ -115,8 +115,11 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         # 모델 평가 결과를 파일에 저장
         
         log_file = 'evaluate_log.txt'
-        with open(log_file, 'r') as file:
-            existing_logs = file.read()
+        if os.path.exists(log_file):
+            with open(log_file, 'r') as file:
+                existing_logs = file.read()
+        else:
+            existing_logs = ""
 
         new_log = f"Model for size {shape} - Loss: {loss}, Accuracy: {accuracy}\n"
 
