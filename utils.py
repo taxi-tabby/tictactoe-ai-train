@@ -3,10 +3,10 @@ import tensorflow as tf
 
 import math
 
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, Flatten, Dense, Dropout, MaxPooling2D, GlobalAveragePooling2D, BatchNormalization
-from tensorflow.keras.optimizers import Adam, SGD
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import Conv2D, Flatten, Dense, Dropout, MaxPooling2D, GlobalAveragePooling2D, BatchNormalization # type: ignore
+from tensorflow.keras.optimizers import Adam, SGD # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 from keras.regularizers import l2
 
 

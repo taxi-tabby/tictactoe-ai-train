@@ -2,10 +2,10 @@ import numpy as np
 import tensorflow as tf
 import os
 import re
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, Flatten, Dense, Dropout, MaxPooling2D, BatchNormalization, LeakyReLU, Reshape
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from tensorflow.keras.models import Sequential # type: ignore
+from tensorflow.keras.layers import Conv2D, Flatten, Dense, Dropout, MaxPooling2D, BatchNormalization, LeakyReLU, Reshape # type: ignore
+from tensorflow.keras.optimizers import Adam # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau # type: ignore
 from tqdm import tqdm  
 from utils import create_model1, dynamicBatchSize
 
@@ -111,6 +111,18 @@ for shape in tqdm(train_files['x'].keys(), desc="Training Models"):
         # 모델 평가
         loss, accuracy = model.evaluate(train_x_shape, train_y_int)
         print(f"✅ Model loss: {loss}, accuracy: {accuracy}")
+
+        # 모델 평가 결과를 파일에 저장
+        
+        log_file = 'evaluate_log.txt'
+        with open(log_file, 'r') as file:
+            existing_logs = file.read()
+
+        new_log = f"Model for size {shape} - Loss: {loss}, Accuracy: {accuracy}\n"
+
+        with open(log_file, 'w') as file:
+            file.write(new_log + existing_logs)
+    
 
         # 모델 저장
         model_dir = './model'
